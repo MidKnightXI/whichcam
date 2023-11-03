@@ -2,12 +2,24 @@
 
 internal class Program
 {
-    private static void Main(string[] args)
+
+    private static async Task RetrieveInformations(DirectoryInfo targetDirectory, FileInfo outputFile)
     {
-        var rootCommand = new RootCommand
-        {
-            new Option<string>("--target", "The directory containing the images to analyze."),
-            new Option<string>("--output", "The output file path.")
-        };
+        Console.WriteLine(targetDirectory.Name);
+        Console.WriteLine(outputFile.Name);
+    }
+
+    private static async Task<int> Main(string[] args)
+    {
+        var rootCommand = new RootCommand("WhichCam - Camera Model/Maker detector");
+        var target = new Option<DirectoryInfo>("--target", "The directory containing the images to analyze."){ IsRequired = true };
+        var output = new Option<FileInfo>("--output", "The output file path."){ IsRequired = true };
+
+        rootCommand.AddOption(target);
+        rootCommand.AddOption(output);
+
+        rootCommand.SetHandler((targ, outp) => RetrieveInformations(targ, outp), target, output);
+
+        return await rootCommand.InvokeAsync(args);
     }
 }
