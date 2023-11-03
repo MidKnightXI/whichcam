@@ -1,14 +1,8 @@
 ﻿using System.CommandLine;
+using WhichCam;
 
 internal class Program
 {
-
-    private static async Task RetrieveInformations(DirectoryInfo targetDirectory, FileInfo outputFile)
-    {
-        Console.WriteLine(targetDirectory.Name);
-        Console.WriteLine(outputFile.Name);
-    }
-
     private static async Task<int> Main(string[] args)
     {
         var rootCommand = new RootCommand("WhichCam - Camera Model/Maker detector");
@@ -24,7 +18,11 @@ internal class Program
         rootCommand.AddOption(target);
         rootCommand.AddOption(output);
 
-        rootCommand.SetHandler((targ, outp) => RetrieveInformations(targ, outp), target, output);
+        rootCommand.SetHandler((targ, outp) =>
+        {
+            var extractor = new InfosExtractor();
+            extractor.RetrieveInformations(targ, outp);
+        }, target, output);
 
         return await rootCommand.InvokeAsync(args);
     }
