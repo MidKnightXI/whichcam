@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MetadataExtractor;
+using MetadataExtractor.Formats.Exif;
+using Microsoft.Extensions.Logging;
 
 namespace WhichCam;
 
@@ -27,19 +29,30 @@ public class InfosExtractor
             return;
         }
 
-        var picturesFromTargetDirectory = targetDirectory.GetFiles()
+        var picturesPaths = targetDirectory.GetFiles()
             .Where(f => validImageFormat.Contains(f.Extension.ToLower()))
+            .Select(f => f.FullName)
             .AsEnumerable();
 
-        if (picturesFromTargetDirectory is null)
+        if (picturesPaths is null)
         {
             _logger.LogError("Directory has no valid files", targetDirectory.FullName);
             return;
         }
 
-        foreach (var pic in picturesFromTargetDirectory)
+        foreach (var path in picturesPaths)
         {
-            var stream = File.OpenRead(pic.FullName);
+            using var stream = File.OpenRead(path);
+            var directories = ImageMetadataReader.ReadMetadata(stream);
+
+            var ifd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
+
+            if (ifd0Directory != null)
+            {
+                var model = ifd0Directory.GetDescription(ExifDirectoryBase.TagModel);
+                var make = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
+            }
+
         }
     }
 }
