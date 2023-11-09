@@ -31,8 +31,7 @@ public class InfosExtractor
 
         var picturesPaths = targetDirectory.GetFiles()
             .Where(f => validImageFormat.Contains(f.Extension.ToLower()))
-            .Select(f => f.FullName)
-            .AsEnumerable();
+            .Select(f => f.FullName);
 
         if (picturesPaths is null)
         {
