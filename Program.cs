@@ -20,8 +20,9 @@ internal class Program
 
         rootCommand.SetHandler((targ, outp) =>
         {
-            var extractor = new InfosExtractor();
-            extractor.RetrieveInformations(targ, outp);
+            InfosExtractor.Check(targ);
+            var infos = InfosExtractor.RetrieveInformations(targ);
+            InfosExtractor.SaveOutputInformations(infos, outp);
         }, target, output);
 
         return await rootCommand.InvokeAsync(args);
