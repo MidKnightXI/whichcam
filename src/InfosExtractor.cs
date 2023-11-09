@@ -74,11 +74,11 @@ public class InfosExtractor
 
     public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations, FileInfo outputFile)
     {
-        if (outputFile.Exists is false)
-        {
-            outputFile.Create();
-        }
         using var stream = outputFile.CreateText();
-        stream.Write(JsonSerializer.Serialize(outputInformations));
+        var json = JsonSerializer.Serialize(
+            outputInformations,
+            new JsonSerializerOptions { WriteIndented = true});
+
+        stream.Write(json);
     }
 }
