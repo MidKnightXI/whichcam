@@ -3,7 +3,7 @@ using WhichCam;
 
 internal class Program
 {
-    private static async Task<int> Main(string[] args)
+    private static int Main(string[] args)
     {
         var rootCommand = new RootCommand("WhichCam - Camera Model/Maker detector");
         var target = new Option<DirectoryInfo>(
@@ -25,6 +25,6 @@ internal class Program
             InfosExtractor.SaveOutputInformations(infos, outp);
         }, target, output);
 
-        return await rootCommand.InvokeAsync(args);
+        return rootCommand.Invoke(args);
     }
 }
