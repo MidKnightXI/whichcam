@@ -1,7 +1,6 @@
 ﻿using System.Text.Json;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
-using Microsoft.Extensions.Logging;
 
 namespace WhichCam;
 
