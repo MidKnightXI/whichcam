@@ -54,12 +54,12 @@ public class InfosExtractor
         return outputInformations;
     }
 
-    public static void Check(DirectoryInfo targetDirectory)
+    public static bool Check(DirectoryInfo targetDirectory)
     {
         if (targetDirectory.Exists is false)
         {
             Console.Error.WriteLine($"Directory does not exist", targetDirectory.FullName);
-            return;
+            return false;
         }
 
         var picturesPaths = targetDirectory.GetFiles()
@@ -68,8 +68,10 @@ public class InfosExtractor
         if (picturesPaths is false)
         {
             Console.Error.WriteLine("Directory has no valid files", targetDirectory.FullName);
-            return;
+            return false;
         }
+
+        return true;
     }
 
     public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations, FileInfo outputFile)

@@ -20,7 +20,9 @@ internal class Program
 
         rootCommand.SetHandler((targ, outp) =>
         {
-            InfosExtractor.Check(targ);
+            if (InfosExtractor.Check(targ) is false)
+                return;
+
             var infos = InfosExtractor.RetrieveInformations(targ);
             InfosExtractor.SaveOutputInformations(infos, outp);
         }, target, output);
