@@ -40,6 +40,7 @@ public class InfosExtractor
             return;
         }
 
+        var outputInformations = new List<PictureInformationsModel>();
         foreach (var path in picturesPaths)
         {
             using var stream = File.OpenRead(path);
@@ -49,10 +50,25 @@ public class InfosExtractor
 
             if (ifd0Directory != null)
             {
+                var maker = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
                 var model = ifd0Directory.GetDescription(ExifDirectoryBase.TagModel);
-                var make = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
-            }
 
+                outputInformations.Add(new PictureInformationsModel()
+                {
+                    Success = true,
+                    Filename = path,
+                    Detected = new CameraInformations(){ Maker = maker, Model = model }
+                });
+            }
+            else
+            {
+                outputInformations.Add(new PictureInformationsModel()
+                {
+                    Success = false,
+                    Filename = path,
+                    Detected = null
+                });
+            }
         }
     }
 }
