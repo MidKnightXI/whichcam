@@ -25,29 +25,14 @@ public class InfosExtractor
         {
             using var stream = File.OpenRead(path);
             var directories = ImageMetadataReader.ReadMetadata(stream);
-            var ifd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
+            var cameraInformations = GetCameraInformations(directories);
 
-            if (ifd0Directory is not null)
+            outputInformations.Add(new PictureInformationsModel()
             {
-                var maker = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
-                var model = ifd0Directory.GetDescription(ExifDirectoryBase.TagModel);
-
-                outputInformations.Add(new PictureInformationsModel()
-                {
-                    Success = true,
-                    Filename = path,
-                    Detected = new CameraInformations(){ Maker = maker, Model = model }
-                });
-            }
-            else
-            {
-                outputInformations.Add(new PictureInformationsModel()
-                {
-                    Success = false,
-                    Filename = path,
-                    Detected = null
-                });
-            }
+                Success = cameraInformations is not null,
+                Filename = path,
+                Detected = cameraInformations
+            });
         }
 
         return outputInformations;
@@ -73,12 +58,29 @@ public class InfosExtractor
         return true;
     }
 
+    private static CameraInformations? GetCameraInformations(IReadOnlyList<MetadataExtractor.Directory> directories)
+    {
+        var ifd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
+
+        if (ifd0Directory is not null)
+        {
+            var maker = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
+            var model = ifd0Directory.GetDescription(ExifDirectoryBase.TagModel);
+
+            return new CameraInformations() { Maker = maker, Model = model };
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations, FileInfo outputFile)
     {
         using var stream = outputFile.CreateText();
         var json = JsonSerializer.Serialize(
             outputInformations,
-            new JsonSerializerOptions { WriteIndented = true});
+            new JsonSerializerOptions { WriteIndented = true });
 
         stream.Write(json);
     }
