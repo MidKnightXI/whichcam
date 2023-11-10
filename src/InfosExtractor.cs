@@ -60,6 +60,11 @@ public class InfosExtractor
 
     private static CameraInformations? GetCameraInformations(IReadOnlyList<MetadataExtractor.Directory> directories)
     {
+        if (directories is null)
+        {
+            return null;
+        }
+
         var ifd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
 
         if (ifd0Directory is not null)
@@ -75,7 +80,8 @@ public class InfosExtractor
         }
     }
 
-    public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations, FileInfo outputFile)
+    public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations,
+                                              FileInfo outputFile)
     {
         using var stream = outputFile.CreateText();
         var json = JsonSerializer.Serialize(
