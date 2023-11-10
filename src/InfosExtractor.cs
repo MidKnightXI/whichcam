@@ -31,7 +31,7 @@ public class InfosExtractor
 
                 outputInformations.Add(new PictureInformationsModel()
                 {
-                    Success = cameraInformations is not null,
+                    Success = true,
                     Filename = path,
                     Detected = cameraInformations
                 });
