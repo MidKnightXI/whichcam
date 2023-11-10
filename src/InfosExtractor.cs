@@ -23,16 +23,29 @@ public class InfosExtractor
 
         foreach (var path in picturesPaths)
         {
-            using var stream = File.OpenRead(path);
-            var directories = ImageMetadataReader.ReadMetadata(stream);
-            var cameraInformations = GetCameraInformations(directories);
-
-            outputInformations.Add(new PictureInformationsModel()
+            try
             {
-                Success = cameraInformations is not null,
-                Filename = path,
-                Detected = cameraInformations
-            });
+                using var stream = File.OpenRead(path);
+                var directories = ImageMetadataReader.ReadMetadata(stream);
+                var cameraInformations = GetCameraInformations(directories);
+
+                outputInformations.Add(new PictureInformationsModel()
+                {
+                    Success = cameraInformations is not null,
+                    Filename = path,
+                    Detected = cameraInformations
+                });
+            }
+            catch (Exception ex)
+            {
+                outputInformations.Add(new PictureInformationsModel()
+                {
+                    Success = false,
+                    Filename = path,
+                    Detected = null,
+                    ErrorMessage = ex.Message
+                });
+            }
         }
 
         return outputInformations;
