@@ -1,7 +1,8 @@
 ﻿using System.CommandLine;
-using WhichCam;
 
-internal class Program
+namespace WhichCam;
+
+internal static class Program
 {
     private static int Main(string[] args)
     {
@@ -23,8 +24,8 @@ internal class Program
             if (InfosExtractor.Check(targ) is false)
                 return;
 
-            var infos = InfosExtractor.RetrieveInformations(targ);
-            InfosExtractor.SaveOutputInformations(infos, outp);
+            var infos = InfosExtractor.RetrieveInformation(targ);
+            InfosExtractor.SaveOutputInformation(infos, outp);
         }, target, output);
 
         return rootCommand.Invoke(args);

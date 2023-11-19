@@ -4,9 +4,9 @@ using MetadataExtractor.Formats.Exif;
 
 namespace WhichCam;
 
-public class InfosExtractor
+public static class InfosExtractor
 {
-    private static readonly string[] validImageFormat =
+    private static readonly string[] _validImageFormat =
     {
         ".jpg", ".png", ".gif", ".tiff", ".cr2", ".nef", ".arw", ".dng", ".raf",
         ".rw2", ".erf", ".nrw", ".crw", ".3fr", ".sr2", ".k25", ".kc2", ".mef",
@@ -14,11 +14,11 @@ public class InfosExtractor
         ".fff", ".mrw", ".x3f", ".mdc", ".rwl", ".pef", ".iiq", ".cxi", ".nksc",
     };
 
-    public static List<PictureInformationsModel> RetrieveInformations(DirectoryInfo targetDirectory)
+    public static List<PictureInformationsModel> RetrieveInformation(DirectoryInfo targetDirectory)
     {
-        var outputInformations = new List<PictureInformationsModel>();
+        var outputInformation = new List<PictureInformationsModel>();
         var picturesPaths = targetDirectory.GetFiles()
-            .Where(f => validImageFormat.Contains(f.Extension.ToLower()))
+            .Where(f => _validImageFormat.Contains(f.Extension.ToLower()))
             .Select(f => f.FullName);
 
         foreach (var path in picturesPaths)
@@ -27,18 +27,18 @@ public class InfosExtractor
             {
                 using var stream = File.OpenRead(path);
                 var directories = ImageMetadataReader.ReadMetadata(stream);
-                var cameraInformations = GetCameraInformations(directories);
+                var cameraInformation = GetCameraInformation(directories);
 
-                outputInformations.Add(new PictureInformationsModel()
+                outputInformation.Add(new PictureInformationsModel()
                 {
                     Success = true,
                     Filename = path,
-                    Detected = cameraInformations
+                    Detected = cameraInformation
                 });
             }
             catch (Exception ex)
             {
-                outputInformations.Add(new PictureInformationsModel()
+                outputInformation.Add(new PictureInformationsModel()
                 {
                     Success = false,
                     Filename = path,
@@ -48,30 +48,30 @@ public class InfosExtractor
             }
         }
 
-        return outputInformations;
+        return outputInformation;
     }
 
     public static bool Check(DirectoryInfo targetDirectory)
     {
         if (targetDirectory.Exists is false)
         {
-            Console.Error.WriteLine($"Directory does not exist", targetDirectory.FullName);
+            Console.Error.WriteLine("Directory {0} does not exist", targetDirectory.FullName);
             return false;
         }
 
         var picturesPaths = targetDirectory.GetFiles()
-            .Any(f => validImageFormat.Contains(f.Extension.ToLower()));
+            .Any(f => _validImageFormat.Contains(f.Extension.ToLower()));
 
         if (picturesPaths is false)
         {
-            Console.Error.WriteLine("Directory has no valid files", targetDirectory.FullName);
+            Console.Error.WriteLine("Directory {0} has no valid files", targetDirectory.FullName);
             return false;
         }
 
         return true;
     }
 
-    private static CameraInformations? GetCameraInformations(IReadOnlyList<MetadataExtractor.Directory> directories)
+    private static CameraInformations? GetCameraInformation(IReadOnlyList<MetadataExtractor.Directory>? directories)
     {
         if (directories is null)
         {
@@ -93,12 +93,12 @@ public class InfosExtractor
         }
     }
 
-    public static void SaveOutputInformations(List<PictureInformationsModel> outputInformations,
+    public static void SaveOutputInformation(List<PictureInformationsModel> outputInformation,
                                               FileInfo outputFile)
     {
         using var stream = outputFile.CreateText();
         var json = JsonSerializer.Serialize(
-            outputInformations,
+            outputInformation,
             new JsonSerializerOptions { WriteIndented = true });
 
         stream.Write(json);
