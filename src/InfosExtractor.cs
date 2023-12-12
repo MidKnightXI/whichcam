@@ -2,6 +2,9 @@
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
+using WhichCam.Model;
+using WhichCam.Model.JsonContext;
+
 namespace WhichCam;
 
 public static class InfosExtractor
@@ -97,9 +100,7 @@ public static class InfosExtractor
                                               FileInfo outputFile)
     {
         using var stream = outputFile.CreateText();
-        var json = JsonSerializer.Serialize(
-            outputInformation,
-            new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(outputInformation, Context.Default.ListPictureInformationsModel);
 
         stream.Write(json);
     }

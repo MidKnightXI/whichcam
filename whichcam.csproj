@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
+    <PublishAot>true</PublishAot>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -10,6 +11,11 @@
   <ItemGroup>
     <PackageReference Include="MetadataExtractor" Version="2.8.1" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="UseSystemTextJsonSourceGeneration" />
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="UseSystemTextJsonSourceGeneration" />
   </ItemGroup>
 
 </Project>
