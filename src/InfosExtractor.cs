@@ -34,9 +34,8 @@ public static class InfosExtractor
 
                 outputInformation.Add(new PictureInformationsModel()
                 {
-                    Success = true,
+                    Success = cameraInformation is not null && (cameraInformation.Maker is not null || cameraInformation.Model is not null),
                     Filename = path,
-                    Detected = cameraInformation
                 });
             }
             catch (Exception ex)
@@ -45,7 +44,6 @@ public static class InfosExtractor
                 {
                     Success = false,
                     Filename = path,
-                    Detected = null,
                     ErrorMessage = ex.Message
                 });
             }
@@ -96,12 +94,10 @@ public static class InfosExtractor
         }
     }
 
-    public static void SaveOutputInformation(List<PictureInformationsModel> outputInformation,
-                                              FileInfo outputFile)
+    public static void SaveOutputInformation(List<PictureInformationsModel> outputInformation, FileInfo outputFile)
     {
         using var stream = outputFile.CreateText();
         var json = JsonSerializer.Serialize(outputInformation, Context.Default.ListPictureInformationsModel);
-
         stream.Write(json);
     }
 }
