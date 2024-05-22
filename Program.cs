@@ -7,20 +7,23 @@ internal static class Program
     private static int Main(string[] args)
     {
         var rootCommand = new RootCommand("WhichCam - Camera Model/Maker detector");
-        var target = new Option<DirectoryInfo>(
-            name: "--target",
-            description: "The directory containing the images to analyze."){
-            IsRequired = true };
-
-        rootCommand.AddOption(target);
-
-        rootCommand.SetHandler(targ =>
+        var target = new Argument<DirectoryInfo>(
+            name: "target",
+            description: "The directory containing the images to analyze.")
         {
-            if (InfosExtractor.Check(targ) is false)
-                return;
+            Arity = ArgumentArity.ExactlyOne
+        };
 
-            var infos = InfosExtractor.RetrieveInformation(targ);
-            InfosExtractor.SaveOutputInformation(infos, new FileInfo(AppContext.BaseDirectory));
+        rootCommand.Add(target);
+
+        rootCommand.SetHandler(target =>
+        {
+            if (InfosExtractor.Check(target) is false)
+            {
+                return;
+            }
+            var infos = InfosExtractor.RetrieveInformation(target);
+            InfosExtractor.SaveOutputInformation(infos, new FileInfo(Path.Join(AppContext.BaseDirectory, "prediction.json")));
         }, target);
 
         return rootCommand.Invoke(args);
