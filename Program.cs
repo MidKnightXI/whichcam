@@ -22,8 +22,10 @@ internal static class Program
             {
                 return;
             }
-            var infos = InfosExtractor.RetrieveInformation(target);
-            InfosExtractor.SaveOutputInformation(infos, new FileInfo(Path.Join(AppContext.BaseDirectory, "prediction.json")));
+            var infos = InfosExtractor.RetrieveInformation(targ);
+            var outputPath = Path.Join(AppContext.BaseDirectory, "prediction.json");
+
+            InfosExtractor.SaveOutputInformation(infos, new FileInfo(outputPath));
         }, target);
 
         return rootCommand.Invoke(args);
