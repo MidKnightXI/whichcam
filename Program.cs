@@ -14,7 +14,7 @@ internal static class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
-        rootCommand.Add(target);
+        rootCommand.AddArgument(target);
 
         rootCommand.SetHandler(target =>
         {
