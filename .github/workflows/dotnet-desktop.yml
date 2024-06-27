@@ -2,8 +2,8 @@ name: Create Release
 
 on:
   push:
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -98,7 +98,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.OVERKILL }}
 
       - name: Upload Linux asset
         uses: actions/upload-release-asset@v1
