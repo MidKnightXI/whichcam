@@ -1,9 +1,19 @@
 {
     "name": "WhichCam",
-    "version": "v1.0.0",
-    "description": "Detects if the photos in the specified path contain a camera maker and model",
+    "version": "v2.0.0",
+    "description": "Orders medias by its camera maker or model.",
     "type": "detection",
-    "arguments": null,
+    "arguments": [
+        {
+            "name": "--output",
+            "type": "string"
+        },
+        {
+            "name": "--orderBy",
+            "type": null,
+            "values": [ "maker", "model" ]
+        }
+    ],
     "binary": "whichcam",
     "runtime": null
 }
