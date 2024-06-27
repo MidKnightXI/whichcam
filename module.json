@@ -1,6 +1,6 @@
 {
     "name": "WhichCam",
-    "version": "v2.0.3",
+    "version": "v2.0.0",
     "description": "Orders medias by its camera maker or model.",
     "type": "detection",
     "arguments": [
