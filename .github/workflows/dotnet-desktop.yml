@@ -2,8 +2,8 @@ name: Create Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    # tags:
+    #   - 'v*'
 
 jobs:
   build:
@@ -64,6 +64,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Print Environment Variables
+        run: printenv
 
       - name: Download build artifacts for Linux
         uses: actions/download-artifact@v3
