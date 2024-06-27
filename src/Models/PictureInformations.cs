@@ -1,11 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace WhichCam.Model;
+﻿namespace WhichCam.Model;
 
 public class PictureInformationsModel
 {
-    public required bool Success { get; set; }
-    public required string Filename { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? ErrorMessage { get; set; }
+    public required string Path { get; set; }
+    public required string? Maker { get; set; }
+    public required string? Model { get; set; }
 }

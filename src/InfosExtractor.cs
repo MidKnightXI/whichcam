@@ -1,29 +1,26 @@
-﻿using System.Text.Json;
-using MetadataExtractor;
+﻿using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 
 using WhichCam.Model;
-using WhichCam.Model.JsonContext;
 
 namespace WhichCam;
 
 public static class InfosExtractor
 {
-    private static readonly string[] _validImageFormat =
-    {
+    public static readonly string[] validImageFormats =
+    [
         ".jpg", ".png", ".gif", ".tiff", ".cr2", ".nef", ".arw", ".dng", ".raf",
         ".rw2", ".erf", ".nrw", ".crw", ".3fr", ".sr2", ".k25", ".kc2", ".mef",
         ".cs1", ".orf", ".mos", ".kdc", ".cr3", ".ari", ".srf", ".srw", ".j6i",
         ".fff", ".mrw", ".x3f", ".mdc", ".rwl", ".pef", ".iiq", ".cxi", ".nksc",
-    };
+    ];
 
     public static List<PictureInformationsModel> RetrieveInformation(DirectoryInfo targetDirectory)
     {
         var outputInformation = new List<PictureInformationsModel>();
         var picturesPaths = targetDirectory.GetFiles()
-            .Where(f => _validImageFormat.Contains(f.Extension.ToLower()))
+            .Where(f => validImageFormats.Contains(f.Extension.ToLower()))
             .Select(f => f.FullName);
-
         foreach (var path in picturesPaths)
         {
             try
@@ -31,56 +28,32 @@ public static class InfosExtractor
                 using var stream = File.OpenRead(path);
                 var directories = ImageMetadataReader.ReadMetadata(stream);
                 var cameraInformation = GetCameraInformation(directories);
-
+                if (cameraInformation is null)
+                {
+                    continue;
+                }
                 outputInformation.Add(new PictureInformationsModel()
                 {
-                    Success = cameraInformation is not null && (cameraInformation.Maker is not null || cameraInformation.Model is not null),
-                    Filename = path,
+                    Path = path,
+                    Maker = cameraInformation.Maker,
+                    Model = cameraInformation.Model,
                 });
             }
             catch (Exception ex)
             {
-                outputInformation.Add(new PictureInformationsModel()
-                {
-                    Success = false,
-                    Filename = path,
-                    ErrorMessage = ex.Message
-                });
+                Console.Error.WriteLine(ex.Message);
             }
         }
-
         return outputInformation;
-    }
-
-    public static bool Check(DirectoryInfo targetDirectory)
-    {
-        if (targetDirectory.Exists is false)
-        {
-            Console.Error.WriteLine("Directory {0} does not exist", targetDirectory.FullName);
-            return false;
-        }
-
-        var picturesPaths = targetDirectory.GetFiles()
-            .Any(f => _validImageFormat.Contains(f.Extension.ToLower()));
-
-        if (picturesPaths is false)
-        {
-            Console.Error.WriteLine("Directory {0} has no valid files", targetDirectory.FullName);
-            return false;
-        }
-
-        return true;
     }
 
     private static CameraInformations? GetCameraInformation(IReadOnlyList<MetadataExtractor.Directory>? directories)
     {
-        if (directories is null)
+        if (directories is null || directories.Count == 0)
         {
             return null;
         }
-
         var ifd0Directory = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
-
         if (ifd0Directory is not null)
         {
             var maker = ifd0Directory.GetDescription(ExifDirectoryBase.TagMake);
@@ -88,16 +61,38 @@ public static class InfosExtractor
 
             return new CameraInformations() { Maker = maker, Model = model };
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
-    public static void SaveOutputInformation(List<PictureInformationsModel> outputInformation, FileInfo outputFile)
+    public static void OrderPictures(List<PictureInformationsModel> infos, DirectoryInfo baseDir, string orderBy)
     {
-        using var stream = outputFile.CreateText();
-        var json = JsonSerializer.Serialize(outputInformation, Context.Default.ListPictureInformationsModel);
-        stream.Write(json);
+        foreach (var info in infos)
+        {
+            DirectoryInfo outputDir;
+            if (orderBy is "maker" && info.Maker is not null)
+            {
+                outputDir = new (Path.Combine(baseDir.FullName, info.Maker.ToLower()));
+            }
+            else if (orderBy is "model" && info.Model is not null)
+            {
+                outputDir = new (Path.Combine(baseDir.FullName, info.Model.ToLower()));
+            }
+            else
+            {
+                continue;
+            }
+            try
+            {
+                if (outputDir.Exists is false)
+                {
+                    outputDir.Create();
+                }
+                File.Copy(info.Path, outputDir.FullName);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+            }
+        }
     }
 }
