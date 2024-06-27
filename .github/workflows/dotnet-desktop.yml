@@ -47,7 +47,7 @@ jobs:
 
       - name: Archive the build artifacts for macOS
         if: matrix.os == 'macos-latest'
-        run: tar -czvf whichcam-macos.tar.gz -C ./bin/Release/net8.0/osx-x64/publish .
+        run: tar -czvf whichcam-macos.tar.gz -C ./bin/Release/net8.0/osx-arm64/publish .
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
