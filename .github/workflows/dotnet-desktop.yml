@@ -69,7 +69,7 @@ jobs:
         run: printenv
 
       - name: Debug GITHUB_TOKEN
-        run: echo "GITHUB_TOKEN=${{ secrets.PAT }}"
+        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}"
 
 
       # - name: Download build artifacts for Linux
