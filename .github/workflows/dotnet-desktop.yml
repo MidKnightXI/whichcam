@@ -2,64 +2,63 @@ name: Create Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    # tags:
+    #   - 'v*'
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+  # build:
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest, macos-latest]
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+  #     - name: Setup .NET Core
+  #       uses: actions/setup-dotnet@v3
+  #       with:
+  #         dotnet-version: '8.0.x'
 
-      - name: Install dependencies
-        run: dotnet restore
+  #     - name: Install dependencies
+  #       run: dotnet restore
 
-      - name: Build the project for Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: dotnet publish -c Release -r linux-x64 --self-contained -p:PublishAot=true
+  #     - name: Build the project for Linux
+  #       if: matrix.os == 'ubuntu-latest'
+  #       run: dotnet publish -c Release -r linux-x64 --self-contained -p:PublishAot=true
 
-      - name: Build the project for Windows
-        if: matrix.os == 'windows-latest'
-        run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishAot=true
+  #     - name: Build the project for Windows
+  #       if: matrix.os == 'windows-latest'
+  #       run: dotnet publish -c Release -r win-x64 --self-contained -p:PublishAot=true
 
-      - name: Build the project for macOS
-        if: matrix.os == 'macos-latest'
-        run: dotnet publish -c Release -r osx-arm64 --self-contained -p:PublishAot=true
+  #     - name: Build the project for macOS
+  #       if: matrix.os == 'macos-latest'
+  #       run: dotnet publish -c Release -r osx-arm64 --self-contained -p:PublishAot=true
 
-      - name: Archive the build artifacts for Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: tar -czvf whichcam-linux.tar.gz -C ./bin/Release/net8.0/linux-x64/publish .
+  #     - name: Archive the build artifacts for Linux
+  #       if: matrix.os == 'ubuntu-latest'
+  #       run: tar -czvf whichcam-linux.tar.gz -C ./bin/Release/net8.0/linux-x64/publish .
 
-      - name: Archive the build artifacts for Windows
-        if: matrix.os == 'windows-latest'
-        run: Compress-Archive -Path ./bin/Release/net8.0/win-x64/publish\* -DestinationPath whichcam-windows.zip
-        shell: pwsh
+  #     - name: Archive the build artifacts for Windows
+  #       if: matrix.os == 'windows-latest'
+  #       run: Compress-Archive -Path ./bin/Release/net8.0/win-x64/publish\* -DestinationPath whichcam-windows.zip
+  #       shell: pwsh
 
-      - name: Archive the build artifacts for macOS
-        if: matrix.os == 'macos-latest'
-        run: tar -czvf whichcam-macos.tar.gz -C ./bin/Release/net8.0/osx-arm64/publish .
+  #     - name: Archive the build artifacts for macOS
+  #       if: matrix.os == 'macos-latest'
+  #       run: tar -czvf whichcam-macos.tar.gz -C ./bin/Release/net8.0/osx-arm64/publish .
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-${{ matrix.os }}
-          path: |
-            whichcam-linux.tar.gz
-            whichcam-windows.zip
-            whichcam-macos.tar.gz
-
+  #     - name: Upload build artifacts
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: build-${{ matrix.os }}
+  #         path: |
+  #           whichcam-linux.tar.gz
+  #           whichcam-windows.zip
+  #           whichcam-macos.tar.gz
   release:
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -68,57 +67,61 @@ jobs:
       - name: Print Environment Variables
         run: printenv
 
-      - name: Download build artifacts for Linux
-        uses: actions/download-artifact@v3
-        with:
-          name: build-ubuntu-latest
-          path: ./linux
+      - name: Debug GITHUB_TOKEN
+        run: echo "GITHUB_TOKEN=${{ secrets.PAT }}"
 
-      - name: Download build artifacts for Windows
-        uses: actions/download-artifact@v3
-        with:
-          name: build-windows-latest
-          path: ./windows
 
-      - name: Download build artifacts for macOS
-        uses: actions/download-artifact@v3
-        with:
-          name: build-macos-latest
-          path: ./macos
+      # - name: Download build artifacts for Linux
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-ubuntu-latest
+      #     path: ./linux
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Release notes for ${{ github.ref }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+      # - name: Download build artifacts for Windows
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-windows-latest
+      #     path: ./windows
 
-      - name: Upload Linux asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux/whichcam-linux.tar.gz
-          asset_name: whichcam-linux.tar.gz
-          asset_content_type: application/gzip
+      # - name: Download build artifacts for macOS
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: build-macos-latest
+      #     path: ./macos
 
-      - name: Upload Windows asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows/whichcam-windows.zip
-          asset_name: whichcam-windows.zip
-          asset_content_type: application/zip
+      # - name: Create GitHub Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     release_name: Release ${{ github.ref }}
+      #     body: |
+      #       Release notes for ${{ github.ref }}
+      #     draft: false
+      #     prerelease: false
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: Upload macOS asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macos/whichcam-macos.tar.gz
-          asset_name: whichcam-macos.tar.gz
-          asset_content_type: application/gzip
+      # - name: Upload Linux asset
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./linux/whichcam-linux.tar.gz
+      #     asset_name: whichcam-linux.tar.gz
+      #     asset_content_type: application/gzip
+
+      # - name: Upload Windows asset
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./windows/whichcam-windows.zip
+      #     asset_name: whichcam-windows.zip
+      #     asset_content_type: application/zip
+
+      # - name: Upload macOS asset
+      #   uses: actions/upload-release-asset@v1
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./macos/whichcam-macos.tar.gz
+      #     asset_name: whichcam-macos.tar.gz
+      #     asset_content_type: application/gzip
