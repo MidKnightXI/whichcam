@@ -11,10 +11,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        runtime:
-          - ubuntu-latest: linux-x64
-          - windows-latest: win-x64
-          - macos-latest: osx-arm64
 
     steps:
       - name: Checkout repository
