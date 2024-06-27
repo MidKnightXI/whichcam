@@ -91,5 +91,3 @@ jobs:
             ./linux/whichcam-linux.tar.gz
             ./windows/whichcam-windows.zip
             ./macos/whichcam-macos.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.OVERKILL }}
