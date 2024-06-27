@@ -11,6 +11,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        runtime:
+          - ubuntu-latest: linux-x64
+          - windows-latest: win-x64
+          - macos-latest: osx-arm64
 
     steps:
       - name: Checkout repository
@@ -25,7 +29,7 @@ jobs:
         run: dotnet restore
 
       - name: Build the project
-        run: dotnet publish -c Release -r ${{ matrix.os }} --self-contained -p:PublishAot=true
+        run: dotnet publish -c Release -r ${{ matrix.runtime }} --self-contained -p:PublishAot=true
 
       - name: Archive the build artifacts for Linux
         if: matrix.os == 'ubuntu-latest'
