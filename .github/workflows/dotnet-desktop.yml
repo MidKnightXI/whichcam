@@ -66,9 +66,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Print Environment Variables
-        run: printenv
-
       - name: Download build artifacts for Linux
         uses: actions/download-artifact@v3
         with:
@@ -88,38 +85,11 @@ jobs:
           path: ./macos
 
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            Release notes for ${{ github.ref_name }}
-          draft: false
-          prerelease: false
+          files: |
+            ./linux/whichcam-linux.tar.gz
+            ./windows/whichcam-windows.zip
+            ./macos/whichcam-macos.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.OVERKILL }}
-
-      - name: Upload Linux asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linux/whichcam-linux.tar.gz
-          asset_name: whichcam-linux.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Windows asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./windows/whichcam-windows.zip
-          asset_name: whichcam-windows.zip
-          asset_content_type: application/zip
-
-      - name: Upload macOS asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./macos/whichcam-macos.tar.gz
-          asset_name: whichcam-macos.tar.gz
-          asset_content_type: application/gzip
