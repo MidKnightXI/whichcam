@@ -2,8 +2,8 @@ name: Create Release
 
 on:
   push:
-    # tags:
-    #   - 'v*'
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -97,7 +97,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
 
       - name: Upload Linux asset
         uses: actions/upload-release-asset@v1
