@@ -12,7 +12,7 @@
         {
             "name": "--orderBy",
             "type": null,
-            "values": [ "maker", "model" ]
+            "values": "maker;model"
         }
     ],
     "binary": "whichcam",
