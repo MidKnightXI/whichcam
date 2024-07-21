@@ -47,7 +47,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path tempArchive -Force
           Copy-Item -Path "./module.json" -Destination "tempArchive/module.json"
-          Copy-Item -Path "./bin/Release/net8.0/win-x64/publish/whichcam" -Destination "tempArchive/whichcam"
+          Copy-Item -Path "./bin/Release/net8.0/win-x64/publish/whichcam.exe" -Destination "tempArchive/whichcam"
           Compress-Archive -Path "tempArchive/*" -DestinationPath "whichcam-windows.zip"
           Remove-Item -Recurse -Force tempArchive
 
