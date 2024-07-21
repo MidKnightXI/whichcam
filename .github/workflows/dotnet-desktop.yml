@@ -39,7 +39,7 @@ jobs:
 
       - name: Archive the build artifacts for Linux
         if: matrix.os == 'ubuntu-latest'
-        run: tar -czvf whichcam-macos.tar.gz -C ./ module.json -C ./bin/Release/net8.0/linux-x64/publish whichcam
+        run: tar -czvf whichcam-linux.tar.gz -C ./ module.json -C ./bin/Release/net8.0/linux-x64/publish whichcam
 
       - name: Archive the build artifacts for Windows
         if: matrix.os == 'windows-latest'
